@@ -101,8 +101,8 @@ const AppliedStudents = () => {
   return (
     <>
         <div>
-            <h1 className='text-2xl font-semibold text-center mt-10'>Applied Students</h1>
-            <div className='flex flex-col gap-4 w-[50%] mt-10 border border-gray-300 p-6 rounded shadow mx-auto'>
+            <h1 className='text-2xl font-semibold text-center '>Applied Students</h1>
+            <div className='flex flex-col gap-4 w-full mt-5 border border-gray-300 p-6 rounded shadow mx-auto'>
                 {students.map(student => (
                     <div key={student.id} className='border border-gray-300 p-4 rounded flex justify-between items-center'>
                         <div className='p-2'>

@@ -22,9 +22,9 @@ createRoot(document.getElementById('root')).render(
         <Route index  element={<CreateJob  />} />
         <Route path="create-job"  element={<CreateJob  />} />
         <Route path="view-jobs" element={<ViewJobs />} />
-        <Route path='view-jobs/job/:id' element={<JobDesc />} />
+        <Route path='view-jobs/job/:id' element={<ViewJobs />} />
+        <Route path='view-jobs/job/:id/applied-students' element={<ViewJobs />} />
         <Route path='create-session' element={<CreateSession />} />
-        <Route path='job/:id/applied-students' element = {<AppliedStudents />} />
         <Route path='signout' element={<TpoSignout />} />
       </Route>
 
