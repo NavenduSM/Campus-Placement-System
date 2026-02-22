@@ -86,6 +86,9 @@ const AppliedStudents = () => {
 ])
 
 
+    
+
+
     const handleReject = (id) => {
         console.log("Rejecting student with id:", id);
         // Implement rejection logic here (e.g., update status, notify student, etc.)
@@ -100,23 +103,28 @@ const AppliedStudents = () => {
 
   return (
     <>
-        <div>
-            <h1 className='text-2xl font-semibold text-center '>Applied Students</h1>
-            <div className='flex flex-col gap-4 w-full mt-5 border border-gray-300 p-6 rounded shadow mx-auto'>
+        <div className = " w-full md:w-3/4">
+            <h1 className='text-xl md:text-2xl font-semibold text-center mb-4'>Applied Students</h1>
+            <div className='flex flex-col gap-4 w-full mt-5 border border-gray-300 p-4 md:p-6 rounded shadow mx-auto'>
                 {students.map(student => (
-                    <div key={student.id} className='border border-gray-300 p-4 rounded flex justify-between items-center'>
-                        <div className='p-2'>
-                            <h2 className='text-xl font-semibold'>{student.name}</h2>
-                            <p>Email: {student.email}</p>
-                            <p>Company: {student.company}</p>
-                            <p>Position: {student.position}</p>
-                            <p>Status: {student.status}</p>
+                    <div key={student.id} className='border border-gray-300 p-3 md:p-4 rounded flex flex-col md:flex-row justify-between items-start md:items-center gap-3'>
+                        <div className='flex-1'>
+                            <h2 className='text-lg md:text-xl font-semibold'>{student.name}</h2>
+                            <p className='text-sm text-gray-600'>Email: {student.email}</p>
+                            <p className='text-sm text-gray-600'>Company: {student.company}</p>
+                            <p className='text-sm text-gray-600'>Position: {student.position}</p>
+                            <p className='text-sm font-medium'>Status: {student.status}</p>
                         </div>
 
-                        <div className=' flex mr-[5%] '>
-                            {/* <button className='bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-600 cursor-pointer mt-2 mr-2'>Accept</button> */}
-                            <button className={`bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-600  mt-2 ${student.status === "Rejected" ? "opacity-50 cursor-not-allowed " : "cursor-pointer"}`} onClick={() => handleReject(student.id)}>{student.status === "Rejected" ? "Rejected" : "Reject"}</button>
-                        </div>
+                        {/* <div className='flex-shrink-0 w-full md:w-auto'>
+                            <button 
+                                className={`bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-600 w-full md:w-auto ${student.status === "Rejected" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`} 
+                                onClick={() => handleReject(student.id)}
+                                disabled={student.status === "Rejected"}
+                            >
+                                {student.status === "Rejected" ? "Rejected" : "Reject"}
+                            </button>
+                        </div> */}
                     </div>
                 ))}
             </div>
