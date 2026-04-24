@@ -18,6 +18,8 @@ import { SessionProvider } from './context/Context.jsx'
 import Landing from './landing.jsx'
 import AuthPage from './components/Auth.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import OfferLetters from './pages/student/OfferLetters.jsx'
+import OfferLetter from './pages/TPO/OfferLetters.jsx'
 // import Signup from './components/Auth.jsx'
 
 
@@ -41,6 +43,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="view-jobs" element={<ViewJobs />} />
             <Route path='view-jobs/job/:id' element={<ViewJobs />} />
             <Route path='view-jobs/job/:id/applied-students' element={<ViewJobs />} />
+            <Route path='offer-letters' element={<OfferLetter />} />
             <Route path='create-session' element={<CreateSession />} />
           </Route>
 
@@ -56,6 +59,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="company-list/job-description/:id" element={<CompanyList />} />
             <Route path="applied-list" element={<AppliedList />} />
             <Route path="upcoming-session" element={<Sessions />} />
+            <Route path="offer-letter" element={<OfferLetters />} />
             <Route path="profile" element={<Profile />} />
           </Route>
 

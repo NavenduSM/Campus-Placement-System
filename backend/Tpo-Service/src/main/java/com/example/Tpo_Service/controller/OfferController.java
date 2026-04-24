@@ -5,13 +5,21 @@ import com.example.Tpo_Service.client.StudentServiceOfferClient;
 import com.example.Tpo_Service.dto.StudentDTO;
 import com.example.Tpo_Service.entity.Offer;
 import com.example.Tpo_Service.service.OfferService;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,42 +48,125 @@ public class OfferController {
         return offer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/download")
+    public ResponseEntity<Resource> downloadOfferLetter(@PathVariable Long id) {
+        Optional<Offer> offerOpt = offerService.getOfferById(id);
+        if (offerOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String pdfPath = offerOpt.get().getOfferPdfPath();
+        if (pdfPath == null || pdfPath.isBlank()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            Path filePath = Paths.get(pdfPath);
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = new UrlResource(filePath.toUri());
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null || contentType.isBlank()) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            }
+
+            String fileName = filePath.getFileName().toString();
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .body(resource);
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/student-lookup")
+    public ResponseEntity<StudentDTO> lookupStudent(@RequestParam("query") String query) {
+        if (query == null || query.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String trimmed = query.trim();
+        try {
+            if (trimmed.matches("\\d+")) {
+                StudentDTO student = studentServiceClient.getStudentById(Long.parseLong(trimmed));
+                return student != null ? ResponseEntity.ok(student) : ResponseEntity.notFound().build();
+            }
+        } catch (NumberFormatException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (FeignException.NotFound ex) {
+            return ResponseEntity.notFound().build();
+        } catch (FeignException.Forbidden ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            StudentDTO student = studentServiceClient.getStudentByEnrollmentNo(trimmed);
+            return student != null ? ResponseEntity.ok(student) : ResponseEntity.notFound().build();
+        } catch (FeignException.NotFound ex) {
+            return ResponseEntity.notFound().build();
+        } catch (FeignException.Forbidden ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @GetMapping("/student-lookup/enrollment/{enrollmentNo}")
+    public ResponseEntity<StudentDTO> lookupStudentByEnrollment(@PathVariable String enrollmentNo) {
+        if (enrollmentNo == null || enrollmentNo.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            StudentDTO student = studentServiceClient.getStudentByEnrollmentNo(enrollmentNo.trim());
+            return student != null ? ResponseEntity.ok(student) : ResponseEntity.notFound().build();
+        } catch (FeignException.NotFound ex) {
+            return ResponseEntity.notFound().build();
+        } catch (FeignException.Forbidden ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Offer> generateOffer(@RequestParam(required = false) String studentId,
-                                               @RequestParam(required = false) String enrollmentNo,
-                                               @RequestParam String companyName,
-                                               @RequestParam String offerDetails,
-                                               @RequestParam(value = "offerPdf", required = false) MultipartFile offerPdf) {
+            @RequestParam(required = false) String enrollmentNo,
+            @RequestParam String companyName,
+            @RequestParam(required = false) String offerDetails,
+            @RequestParam(value = "offerPdf", required = false) MultipartFile offerPdf) {
         try {
-            Long resolvedStudentId = null;
+            StudentDTO student = null;
             String effectiveEnrollmentNo = enrollmentNo;
 
             if (studentId != null && !studentId.isBlank()) {
                 try {
-                    resolvedStudentId = Long.parseLong(studentId);
+                    student = studentServiceClient.getStudentById(Long.parseLong(studentId));
                 } catch (NumberFormatException ex) {
-                    // Backward compatible handling: if caller sends enrollment number in studentId key.
                     effectiveEnrollmentNo = studentId;
                 }
             }
 
-            if (resolvedStudentId == null) {
+            if (student == null) {
                 if (effectiveEnrollmentNo == null || effectiveEnrollmentNo.isBlank()) {
                     return ResponseEntity.badRequest().build();
                 }
-                StudentDTO student = studentServiceClient.getStudentByEnrollmentNo(effectiveEnrollmentNo);
+                student = studentServiceClient.getStudentByEnrollmentNo(effectiveEnrollmentNo);
                 if (student == null || student.getId() == null) {
                     return ResponseEntity.badRequest().build();
                 }
-                resolvedStudentId = student.getId();
             }
 
-            Offer offer = offerService.generateOffer(resolvedStudentId, companyName, offerDetails, offerPdf);
-            // Send offer to Student Service via Feign
+            if (offerPdf == null || offerPdf.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Offer offer = offerService.generateOffer(student.getId(), companyName, offerDetails, offerPdf);
             studentServiceOfferClient.sendOfferToStudent(offer);
             return ResponseEntity.ok(offer);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 

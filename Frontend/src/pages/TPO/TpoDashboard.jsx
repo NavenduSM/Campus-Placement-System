@@ -48,6 +48,7 @@ const TpoDashboard = () => {
                 <NavLink to="create-job" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Create Job</NavLink>
                 <NavLink to="view-jobs" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>View Jobs</NavLink>
                 <NavLink to="create-session" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Create Session</NavLink>
+                <NavLink to="offer-letters" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Offer Letters</NavLink>
                 <button onClick={() => setShowSignoutModal(true)} className="text-gray-700 hover:text-blue-600 cursor-pointer">Signout</button>
             </div>
         </div>
@@ -71,6 +72,11 @@ const TpoDashboard = () => {
                         className={({ isActive }) => isActive ? "text-blue-600 bg-blue-50 p-3 rounded" : "text-gray-700 p-3 hover:bg-gray-50"}
                         onClick={closeAllMenus}
                     >Create Session</NavLink>
+                    <NavLink 
+                        to="offer-letters" 
+                        className={({ isActive }) => isActive ? "text-blue-600 bg-blue-50 p-3 rounded" : "text-gray-700 p-3 hover:bg-gray-50"}
+                        onClick={closeAllMenus}
+                    >Offer Letters</NavLink>
                     <button 
                         onClick={() => { closeAllMenus(); setShowSignoutModal(true); }}
                         className="text-gray-700 p-3 hover:bg-gray-50 text-left"

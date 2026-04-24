@@ -41,6 +41,7 @@ const Dashboard = () => {
           <NavLink to="/student/company-list" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Company List</NavLink>
           <NavLink to="/student/applied-list" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Applied List</NavLink>
           <NavLink to="/student/upcoming-session" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Upcoming Session</NavLink>
+          <NavLink to="/student/offer-letter" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Offer Letter</NavLink>
           <NavLink to="/student/profile" className={({ isActive }) => isActive ? "text-blue-600 border-b-2 border-blue-600 pb-1" : "text-gray-700 hover:text-blue-600"}>Profile</NavLink>
           <button onClick={() => setShowSignoutModal(true)} className="text-gray-700 hover:text-blue-600 cursor-pointer">Logout</button>
         </div>
@@ -65,6 +66,11 @@ const Dashboard = () => {
               className={({ isActive }) => isActive ? "text-blue-600 bg-blue-50 p-3 rounded" : "text-gray-700 p-3 hover:bg-gray-50"}
               onClick={handleNavClick}
             >Upcoming Session</NavLink>
+            <NavLink 
+              to="/student/offer-letter" 
+              className={({ isActive }) => isActive ? "text-blue-600 bg-blue-50 p-3 rounded" : "text-gray-700 p-3 hover:bg-gray-50"}
+              onClick={handleNavClick}
+            >Offer Letter</NavLink>
             <NavLink 
               to="/student/profile" 
               className={({ isActive }) => isActive ? "text-blue-600 bg-blue-50 p-3 rounded" : "text-gray-700 p-3 hover:bg-gray-50"}

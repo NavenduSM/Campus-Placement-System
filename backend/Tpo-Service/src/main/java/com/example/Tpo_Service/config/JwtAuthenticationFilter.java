@@ -61,7 +61,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "STUDENT".equals(role) &&
                 "POST".equalsIgnoreCase(method) &&
                 uri.startsWith("/api/applications/receive");
-            if (!studentSessionRead && !studentJobsRead && !studentApplicationSend) {
+            boolean studentOfferDownload =
+                "STUDENT".equals(role) &&
+                "GET".equalsIgnoreCase(method) &&
+                uri.matches("^/api/offers/\\d+/download$");
+            if (!studentSessionRead && !studentJobsRead && !studentApplicationSend && !studentOfferDownload) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }

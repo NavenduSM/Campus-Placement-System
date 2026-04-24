@@ -61,6 +61,14 @@ public class Offer {
         this.generatedDate = generatedDate;
     }
 
+    public Long getTpoOfferId() {
+        return tpoOfferId;
+    }
+
+    public void setTpoOfferId(Long tpoOfferId) {
+        this.tpoOfferId = tpoOfferId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -70,4 +78,5 @@ public class Offer {
     private String offerDetails;
     private String offerPdfPath;
     private LocalDateTime generatedDate;
+    private Long tpoOfferId;
 }
